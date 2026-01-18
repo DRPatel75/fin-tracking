@@ -1,0 +1,14 @@
+# node modules (ignore everywhere)
+node_modules/
+
+# env files
+.env
+
+# build folders
+dist/
+build/
+
+# logs
+error.log
+npm-debug.log*
+output*.txt
