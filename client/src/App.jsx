@@ -7,6 +7,8 @@ import IncomePage from './pages/IncomePage';
 import ExpensePage from './pages/ExpensePage';
 import BudgetPage from './pages/BudgetPage';
 import ReportsPage from './pages/ReportsPage';
+import UploadStatement from './pages/UploadStatement';
+import InsightsPage from './pages/InsightsPage';
 import { useContext } from 'react';
 import AuthContext from './context/AuthContext';
 
@@ -51,6 +53,16 @@ function App() {
                     <Route path="/reports" element={
                         <PrivateRoute>
                             <ReportsPage />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/upload" element={
+                        <PrivateRoute>
+                            <UploadStatement />
+                        </PrivateRoute>
+                    } />
+                    <Route path="/insights" element={
+                        <PrivateRoute>
+                            <InsightsPage />
                         </PrivateRoute>
                     } />
 

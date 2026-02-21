@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
+import AuthContext from '../context/AuthContext';
 import api from '../services/api';
 import Layout from '../components/Layout';
 import GlassCard from '../components/GlassCard';
@@ -6,7 +7,9 @@ import GlassInput from '../components/GlassInput';
 import NeonButton from '../components/NeonButton';
 
 const BudgetPage = () => {
+    const { user } = useContext(AuthContext);
     const [budgets, setBudgets] = useState([]);
+    const [insights, setInsights] = useState(null);
     const [formData, setFormData] = useState({
         category: 'Food',
         limit: '',
@@ -15,29 +18,54 @@ const BudgetPage = () => {
     });
 
     useEffect(() => {
-        fetchBudgets();
+        fetchData();
     }, []);
 
-    const fetchBudgets = async () => {
-        const { data } = await api.get('/budget');
-        setBudgets(data);
+    const fetchData = async () => {
+        try {
+            const [budgetRes, insightsRes] = await Promise.all([
+                api.get('/budget'),
+                api.get('/insights')
+            ]);
+            setBudgets(budgetRes.data);
+            setInsights(insightsRes.data);
+        } catch (error) {
+            console.error('Failed to fetch data');
+        }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         await api.post('/budget', formData);
         setFormData({ category: 'Food', limit: '', month: 'January', year: new Date().getFullYear() });
-        fetchBudgets();
+        fetchData();
     };
 
     const handleDelete = async (id) => {
         await api.delete(`/budget/${id}`);
-        fetchBudgets();
+        fetchData();
     };
 
     return (
         <Layout>
-            <h2 className="text-3xl font-bold mb-8 text-purple-400">Budget Planning</h2>
+            <h2 className="text-3xl font-bold mb-8 text-purple-400">Budget Management</h2>
+
+            {insights && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <GlassCard className="border-l-4 border-l-purple-500">
+                        <p className="text-gray-400 text-sm">Monthly Limit</p>
+                        <p className="text-2xl font-bold text-white">${insights.totalBudgetLimit.toLocaleString()}</p>
+                    </GlassCard>
+                    <GlassCard className="border-l-4 border-l-blue-500">
+                        <p className="text-gray-400 text-sm">Amount Used</p>
+                        <p className="text-2xl font-bold text-white">${insights.totalSpent.toLocaleString()}</p>
+                    </GlassCard>
+                    <GlassCard className="border-l-4 border-l-green-500">
+                        <p className="text-gray-400 text-sm">Daily Safe Spend</p>
+                        <p className="text-2xl font-bold text-green-400">${insights.dailySafeSpend}</p>
+                    </GlassCard>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Form */}
@@ -133,8 +161,8 @@ const BudgetPage = () => {
                                         <div className="w-full h-3 bg-gray-700/50 rounded-full overflow-hidden border border-white/5">
                                             <div
                                                 className={`h-full transition-all duration-500 ease-out ${isExceeded ? 'bg-gradient-to-r from-red-500 to-pink-500' :
-                                                        percent > 80 ? 'bg-gradient-to-r from-orange-500 to-yellow-500' :
-                                                            'bg-gradient-to-r from-green-500 to-emerald-500'
+                                                    percent > 80 ? 'bg-gradient-to-r from-orange-500 to-yellow-500' :
+                                                        'bg-gradient-to-r from-green-500 to-emerald-500'
                                                     }`}
                                                 style={{ width: `${percent}%` }}
                                             />
@@ -157,6 +185,32 @@ const BudgetPage = () => {
                         })
                     )}
                 </div>
+            </div>
+
+            {/* Notification Settings Section */}
+            <div className="mt-12">
+                <h3 className="text-xl font-semibold mb-6 text-gray-200">Notification Settings</h3>
+                <GlassCard className="max-w-2xl">
+                    <div className="flex items-center justify-between py-4 border-b border-gray-700">
+                        <div>
+                            <p className="font-semibold text-white">Budget Alerts</p>
+                            <p className="text-sm text-gray-400">Receive emails when you reach 70%, 90%, or 100% of your budget.</p>
+                        </div>
+                        <div className="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-purple-600 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                            <span className="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between py-4">
+                        <div>
+                            <p className="font-semibold text-white">Daily Summary</p>
+                            <p className="text-sm text-gray-400">Receive a daily summary of your spending patterns.</p>
+                        </div>
+                        <div className="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-700 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                            <span className="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                        </div>
+                    </div>
+                    <p className="mt-4 text-xs text-gray-500 italic">* Alerts are sent to: {user?.email}</p>
+                </GlassCard>
             </div>
         </Layout>
     );

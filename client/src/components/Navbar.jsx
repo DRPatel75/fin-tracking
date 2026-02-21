@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useContext } from 'react';
 import AuthContext from '../context/AuthContext';
-import { Home, DollarSign, PieChart, LogOut, Settings } from 'lucide-react';
+import { Home, DollarSign, PieChart, LogOut, Settings, Zap, UploadCloud } from 'lucide-react';
 
 const Navbar = () => {
     const { user, logout } = useContext(AuthContext);
@@ -46,6 +46,18 @@ const Navbar = () => {
                         <Link to="/reports" className="flex items-center p-3 rounded hover:bg-gray-700 transition">
                             <PieChart className="mr-3 text-pink-400" size={20} />
                             Reports
+                        </Link>
+                    </li>
+                    <li className="border-t border-gray-700 pt-4">
+                        <Link to="/insights" className="flex items-center p-3 rounded hover:bg-gray-700 transition">
+                            <Zap className="mr-3 text-yellow-400" size={20} />
+                            Smart Insights
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to="/upload" className="flex items-center p-3 rounded hover:bg-gray-700 transition">
+                            <UploadCloud className="mr-3 text-blue-400" size={20} />
+                            Upload Statement
                         </Link>
                     </li>
                 </ul>
