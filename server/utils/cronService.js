@@ -18,7 +18,7 @@ const checkBudgets = async () => {
 
         for (const budget of budgets) {
             // Respect user notification preferences
-            if (!budget.user.notifications?.budgetAlerts) continue;
+            if (!budget.user || !budget.user.notifications?.budgetAlerts) continue;
 
             // Only check budgets for current month/year
             if (budget.month !== currentMonth || budget.year !== currentYear) continue;

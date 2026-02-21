@@ -27,4 +27,20 @@ router.post('/test-alerts', protect, async (req, res) => {
     res.status(200).json({ message: 'Budget check triggered' });
 });
 
+// Direct test email
+router.post('/send-test-email', protect, async (req, res) => {
+    try {
+        const { sendEmail } = require('../utils/emailService');
+        await sendEmail({
+            email: req.user.email,
+            subject: 'FinTracker AI - Test Email',
+            html: '<h3>Test Successful!</h3><p>Your SMTP configuration is working correctly.</p>'
+        });
+        res.status(200).json({ message: 'Test email sent' });
+    } catch (err) {
+        console.error('Test email failed:', err);
+        res.status(500).json({ message: 'Failed to send test email', error: err.message });
+    }
+});
+
 module.exports = router;
