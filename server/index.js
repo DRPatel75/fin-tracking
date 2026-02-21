@@ -5,7 +5,11 @@ const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
+const { initCron } = require('./utils/cronService');
+
 dotenv.config();
+
+initCron();
 
 const port = process.env.PORT || 5000;
 
@@ -38,6 +42,8 @@ const startServer = async () => {
         app.use('/api/categories', require('./routes/categoryRoutes'));
         app.use('/api/budget', require('./routes/budgetRoutes'));
         app.use('/api/summary', require('./routes/summaryRoutes'));
+        app.use('/api/upload', require('./routes/uploadRoutes'));
+        app.use('/api/insights', require('./routes/insightRoutes'));
 
         app.get('/', (req, res) => {
             res.send('API is running...');

@@ -15,7 +15,8 @@ const authUser = asyncHandler(async (req, res) => {
         res.status(201).json({
             _id: user._id,
             name: user.name,
-            email: user.email
+            email: user.email,
+            notifications: user.notifications
         });
     } else {
         res.status(401);
@@ -47,7 +48,8 @@ const registerUser = asyncHandler(async (req, res) => {
         res.status(201).json({
             _id: user._id,
             name: user.name,
-            email: user.email
+            email: user.email,
+            notifications: user.notifications
         });
     } else {
         res.status(400);
@@ -73,7 +75,8 @@ const getUserProfile = asyncHandler(async (req, res) => {
     const user = {
         _id: req.user._id,
         name: req.user.name,
-        email: req.user.email
+        email: req.user.email,
+        notifications: req.user.notifications
     };
     res.status(200).json(user);
 });
@@ -92,12 +95,17 @@ const updateUserProfile = asyncHandler(async (req, res) => {
             user.password = req.body.password;
         }
 
+        if (req.body.notifications) {
+            user.notifications = { ...user.notifications, ...req.body.notifications };
+        }
+
         const updatedUser = await user.save();
 
         res.status(200).json({
             _id: updatedUser._id,
             name: updatedUser.name,
-            email: updatedUser.email
+            email: updatedUser.email,
+            notifications: updatedUser.notifications
         });
     } else {
         res.status(404);

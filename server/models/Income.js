@@ -24,6 +24,11 @@ const incomeSchema = mongoose.Schema({
     },
     description: {
         type: String
+    },
+    source: {
+        type: String,
+        enum: ['manual', 'parsed'],
+        default: 'manual'
     }
 }, {
     timestamps: true

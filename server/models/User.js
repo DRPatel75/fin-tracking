@@ -14,6 +14,10 @@ const userSchema = mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    notifications: {
+        budgetAlerts: { type: Boolean, default: true },
+        dailySummary: { type: Boolean, default: false }
     }
 }, {
     timestamps: true

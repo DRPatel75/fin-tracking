@@ -196,20 +196,54 @@ const BudgetPage = () => {
                             <p className="font-semibold text-white">Budget Alerts</p>
                             <p className="text-sm text-gray-400">Receive emails when you reach 70%, 90%, or 100% of your budget.</p>
                         </div>
-                        <div className="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-purple-600 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
-                            <span className="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
-                        </div>
+                        <button
+                            onClick={async () => {
+                                const newVal = !user.notifications?.budgetAlerts;
+                                await api.put('/users/profile', {
+                                    notifications: { ...user.notifications, budgetAlerts: newVal }
+                                });
+                                window.location.reload(); // Quick way to update user context
+                            }}
+                            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${user.notifications?.budgetAlerts ? 'bg-purple-600' : 'bg-gray-700'}`}
+                        >
+                            <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${user.notifications?.budgetAlerts ? 'translate-x-5' : 'translate-x-0'}`}></span>
+                        </button>
                     </div>
                     <div className="flex items-center justify-between py-4">
                         <div>
                             <p className="font-semibold text-white">Daily Summary</p>
                             <p className="text-sm text-gray-400">Receive a daily summary of your spending patterns.</p>
                         </div>
-                        <div className="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-gray-700 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
-                            <span className="translate-x-0 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
-                        </div>
+                        <button
+                            onClick={async () => {
+                                const newVal = !user.notifications?.dailySummary;
+                                await api.put('/users/profile', {
+                                    notifications: { ...user.notifications, dailySummary: newVal }
+                                });
+                                window.location.reload();
+                            }}
+                            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${user.notifications?.dailySummary ? 'bg-purple-600' : 'bg-gray-700'}`}
+                        >
+                            <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${user.notifications?.dailySummary ? 'translate-x-5' : 'translate-x-0'}`}></span>
+                        </button>
                     </div>
-                    <p className="mt-4 text-xs text-gray-500 italic">* Alerts are sent to: {user?.email}</p>
+                    <div className="flex justify-between items-center mt-6">
+                        <p className="text-xs text-gray-500 italic">* Alerts are sent to: {user?.email}</p>
+                        <NeonButton
+                            variant="primary"
+                            className="text-xs py-1 px-3"
+                            onClick={async () => {
+                                try {
+                                    await api.post('/upload/test-alerts');
+                                    alert('Budget check triggered! Check your mail (if budget > 70%).');
+                                } catch (err) {
+                                    alert('Error triggering check.');
+                                }
+                            }}
+                        >
+                            Test Alert System
+                        </NeonButton>
+                    </div>
                 </GlassCard>
             </div>
         </Layout>
