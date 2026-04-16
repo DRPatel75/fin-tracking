@@ -16,6 +16,7 @@ A full-stack personal finance tracking web application that helps users manage t
 ### Frontend
 - HTML / CSS / JavaScript
 - Bootstrap / Custom CSS
+- React.js
 
 ### Backend
 - Node.js
