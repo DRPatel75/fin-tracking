@@ -36,9 +36,11 @@ const InsightsPage = () => {
 
             {insightsData && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <GlassCard className="border-l-4 border-l-purple-500">
+                    <GlassCard className={`border-l-4 ${insightsData.remainingBudget < 0 ? 'border-l-red-500' : 'border-l-purple-500'}`}>
                         <p className="text-gray-400 text-sm">Monthly Remaining</p>
-                        <p className="text-3xl font-bold text-purple-400">${insightsData.remainingBudget.toLocaleString()}</p>
+                        <p className={`text-3xl font-bold ${insightsData.remainingBudget < 0 ? 'text-red-400' : 'text-purple-400'}`}>
+                            {insightsData.remainingBudget < 0 ? '-' : ''}${Math.abs(insightsData.remainingBudget).toLocaleString()}
+                        </p>
                     </GlassCard>
                     <GlassCard className="border-l-4 border-l-green-500">
                         <p className="text-gray-400 text-sm">Safe Daily Spend</p>
@@ -115,12 +117,14 @@ const InsightsPage = () => {
                             <div>
                                 <div className="flex justify-between text-sm mb-2">
                                     <span className="text-gray-400">Total Budget Status</span>
-                                    <span className="text-gray-300">{Math.round((insightsData?.totalSpent / insightsData?.totalBudgetLimit) * 100) || 0}%</span>
+                                    <span className={insightsData?.totalBudgetLimit === 0 || (insightsData?.totalSpent > insightsData?.totalBudgetLimit) ? 'text-red-400 font-bold' : 'text-gray-300'}>
+                                        {insightsData?.totalBudgetLimit === 0 ? 'No Budget Set' : `${Math.round((insightsData?.totalSpent / insightsData?.totalBudgetLimit) * 100) || 0}%`}
+                                    </span>
                                 </div>
                                 <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
                                     <div
-                                        className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
-                                        style={{ width: `${Math.min((insightsData?.totalSpent / insightsData?.totalBudgetLimit) * 100, 100) || 0}%` }}
+                                        className={`h-full ${insightsData?.totalBudgetLimit === 0 ? 'bg-red-500' : 'bg-gradient-to-r from-blue-500 to-purple-500'}`}
+                                        style={{ width: `${insightsData?.totalBudgetLimit === 0 ? (insightsData?.totalSpent > 0 ? 100 : 0) : Math.min((insightsData?.totalSpent / insightsData?.totalBudgetLimit) * 100, 100) || 0}%` }}
                                     ></div>
                                 </div>
                             </div>

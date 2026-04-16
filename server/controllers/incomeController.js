@@ -13,16 +13,16 @@ const getIncomes = asyncHandler(async (req, res) => {
 // @route   POST /api/income
 // @access  Private
 const addIncome = asyncHandler(async (req, res) => {
-    const { source, amount, category, description, date } = req.body;
+    const { title, amount, category, description, date } = req.body;
 
-    if (!source || !amount || !category) {
+    if (!title || !amount || !category) {
         res.status(400);
         throw new Error('Please add all fields');
     }
 
     const income = await Income.create({
         user: req.user.id,
-        source,
+        title,
         amount,
         category,
         description,

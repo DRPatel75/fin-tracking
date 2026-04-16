@@ -1,8 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const generateToken = require('../utils/generateToken');
 const User = require('../models/User');
-
-// @desc    Auth user/set token
+const crypto = require('crypto');
 // @route   POST /api/users/auth
 // @access  Public
 const authUser = asyncHandler(async (req, res) => {
@@ -15,8 +14,7 @@ const authUser = asyncHandler(async (req, res) => {
         res.status(201).json({
             _id: user._id,
             name: user.name,
-            email: user.email,
-            notifications: user.notifications
+            email: user.email
         });
     } else {
         res.status(401);
@@ -48,8 +46,7 @@ const registerUser = asyncHandler(async (req, res) => {
         res.status(201).json({
             _id: user._id,
             name: user.name,
-            email: user.email,
-            notifications: user.notifications
+            email: user.email
         });
     } else {
         res.status(400);
@@ -75,8 +72,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
     const user = {
         _id: req.user._id,
         name: req.user.name,
-        email: req.user.email,
-        notifications: req.user.notifications
+        email: req.user.email
     };
     res.status(200).json(user);
 });
@@ -95,17 +91,12 @@ const updateUserProfile = asyncHandler(async (req, res) => {
             user.password = req.body.password;
         }
 
-        if (req.body.notifications) {
-            user.notifications = { ...user.notifications, ...req.body.notifications };
-        }
-
         const updatedUser = await user.save();
 
         res.status(200).json({
             _id: updatedUser._id,
             name: updatedUser.name,
-            email: updatedUser.email,
-            notifications: updatedUser.notifications
+            email: updatedUser.email
         });
     } else {
         res.status(404);
@@ -113,10 +104,68 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     }
 });
 
+// @desc    Forgot password
+// @route   POST /api/users/forgotpassword
+// @access  Public
+const forgotPassword = asyncHandler(async (req, res) => {
+    const user = await User.findOne({ email: req.body.email });
+
+    if (!user) {
+        res.status(404);
+        throw new Error('There is no user with that email');
+    }
+
+    // Get reset token
+    const resetToken = user.getResetPasswordToken();
+
+    await user.save({ validateBeforeSave: false });
+
+    // Create reset url (frontend url) // Normally use an environment variable for frontend URL
+    const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
+
+    // For testing/mocking without SMTP, we just return the URL so the frontend can show it
+    console.log(`[MOCK EMAIL] Password reset requested for ${user.email}. Link: ${resetUrl}`);
+    res.status(200).json({ success: true, data: 'Password reset link generated', resetUrl });
+});
+
+// @desc    Reset password
+// @route   PUT /api/users/resetpassword/:resettoken
+// @access  Public
+const resetPassword = asyncHandler(async (req, res) => {
+    // Get hashed token
+    const resetPasswordToken = crypto.createHash('sha256').update(req.params.resettoken).digest('hex');
+
+    const user = await User.findOne({
+        resetPasswordToken,
+        resetPasswordExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+        res.status(400);
+        throw new Error('Invalid token');
+    }
+
+    // Set new password
+    user.password = req.body.password;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+
+    generateToken(res, user._id);
+    
+    res.status(200).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email
+    });
+});
+
 module.exports = {
     authUser,
     registerUser,
     logoutUser,
     getUserProfile,
-    updateUserProfile
+    updateUserProfile,
+    forgotPassword,
+    resetPassword
 };

@@ -93,6 +93,20 @@ const getInsights = asyncHandler(async (req, res) => {
     const remainingBudget = totalBudgetLimitResult - totalSpentResult;
     const daysRemaining = new Date(currentYear, currentMonth + 1, 0).getDate() - today.getDate();
 
+    if (totalBudgetLimitResult === 0 && totalSpentResult > 0) {
+        insights.push({
+            type: 'warning',
+            category: 'Overspent (No Budget)',
+            message: `You have spent $${totalSpentResult.toLocaleString()} this month but haven't set any budgets.`
+        });
+    } else if (totalSpentResult > totalBudgetLimitResult && totalBudgetLimitResult > 0) {
+        insights.push({
+            type: 'danger',
+            category: 'Total Budget',
+            message: `You have exceeded your overall monthly budget by $${(totalSpentResult - totalBudgetLimitResult).toLocaleString()}.`
+        });
+    }
+
     const safeSpend = daysRemaining > 0 ? (remainingBudget / daysRemaining).toFixed(2) : 0;
 
     res.status(200).json({
@@ -100,7 +114,7 @@ const getInsights = asyncHandler(async (req, res) => {
         dailySafeSpend: safeSpend > 0 ? safeSpend : 0,
         totalBudgetLimit: totalBudgetLimitResult,
         totalSpent: totalSpentResult,
-        remainingBudget: remainingBudget > 0 ? remainingBudget : 0,
+        remainingBudget: remainingBudget,
         daysRemaining: daysRemaining > 0 ? daysRemaining : 0
     });
 });

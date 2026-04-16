@@ -10,7 +10,6 @@ const BudgetPage = () => {
     const { user, setUser } = useContext(AuthContext);
     const [budgets, setBudgets] = useState([]);
     const [insights, setInsights] = useState(null);
-    const [toggling, setToggling] = useState(false);
     const [formData, setFormData] = useState({
         category: 'Food',
         limit: '',
@@ -47,41 +46,6 @@ const BudgetPage = () => {
         fetchData();
     };
 
-    const togglePreference = async (type) => {
-        console.log('Toggling preference:', type, 'Current user:', user);
-        if (!user) {
-            alert('User data not loaded. Please refresh or login again.');
-            return;
-        }
-        if (toggling) return;
-
-        const currentVal = user.notifications?.[type];
-        const newVal = !currentVal;
-
-        // Optimistic Update
-        const updatedUser = {
-            ...user,
-            notifications: {
-                ...user.notifications,
-                [type]: newVal
-            }
-        };
-        setUser(updatedUser);
-
-        try {
-            setToggling(true);
-            await api.put('/users/profile', {
-                notifications: { [type]: newVal }
-            });
-        } catch (err) {
-            console.error('Failed to update preference', err);
-            // Revert on error
-            setUser(user);
-            alert('Failed to save notification settings.');
-        } finally {
-            setToggling(false);
-        }
-    };
 
     return (
         <Layout>
@@ -224,71 +188,6 @@ const BudgetPage = () => {
                 </div>
             </div>
 
-            {/* Notification Settings Section */}
-            <div className="mt-12">
-                <h3 className="text-xl font-semibold mb-6 text-gray-200">Notification Settings</h3>
-                <GlassCard className="max-w-2xl">
-                    <div className="flex items-center justify-between py-4 border-b border-gray-700">
-                        <div>
-                            <p className="font-semibold text-white">Budget Alerts</p>
-                            <p className="text-sm text-gray-400">Receive emails when you reach 70%, 90%, or 100% of your budget.</p>
-                        </div>
-                        <button
-                            disabled={toggling}
-                            onClick={() => togglePreference('budgetAlerts')}
-                            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${user?.notifications?.budgetAlerts ? 'bg-purple-600' : 'bg-gray-700'} ${toggling ? 'opacity-50' : ''}`}
-                        >
-                            <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${user?.notifications?.budgetAlerts ? 'translate-x-5' : 'translate-x-0'}`}></span>
-                        </button>
-                    </div>
-                    <div className="flex items-center justify-between py-4">
-                        <div>
-                            <p className="font-semibold text-white">Daily Summary</p>
-                            <p className="text-sm text-gray-400">Receive a daily summary of your spending patterns.</p>
-                        </div>
-                        <button
-                            disabled={toggling}
-                            onClick={() => togglePreference('dailySummary')}
-                            className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${user?.notifications?.dailySummary ? 'bg-purple-600' : 'bg-gray-700'} ${toggling ? 'opacity-50' : ''}`}
-                        >
-                            <span className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${user?.notifications?.dailySummary ? 'translate-x-5' : 'translate-x-0'}`}></span>
-                        </button>
-                    </div>
-                    <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-6 gap-4 border-t border-gray-700 pt-6">
-                        <p className="text-xs text-gray-500 italic">Alerts sent to: {user?.email}</p>
-                        <div className="flex gap-2">
-                            <NeonButton
-                                variant="primary"
-                                className="text-xs py-1 px-3"
-                                onClick={async () => {
-                                    try {
-                                        await api.post('/upload/test-alerts');
-                                        alert('Budget check triggered! It only sends mail if a budget is > 70% used.');
-                                    } catch (err) {
-                                        alert('Error triggering check.');
-                                    }
-                                }}
-                            >
-                                Trigger Logic Check
-                            </NeonButton>
-                            <NeonButton
-                                variant="success"
-                                className="text-xs py-1 px-3"
-                                onClick={async () => {
-                                    try {
-                                        await api.post('/upload/send-test-email');
-                                        alert('Test email request sent! Check your inbox.');
-                                    } catch (err) {
-                                        alert('Error sending test email. Check your SMTP settings in .env');
-                                    }
-                                }}
-                            >
-                                Send Test Email
-                            </NeonButton>
-                        </div>
-                    </div>
-                </GlassCard>
-            </div>
         </Layout>
     );
 };

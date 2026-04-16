@@ -9,6 +9,8 @@ import BudgetPage from './pages/BudgetPage';
 import ReportsPage from './pages/ReportsPage';
 import UploadStatement from './pages/UploadStatement';
 import InsightsPage from './pages/InsightsPage';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import { useContext } from 'react';
 import AuthContext from './context/AuthContext';
 
@@ -28,6 +30,8 @@ function App() {
                 <Routes>
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password/:resettoken" element={<ResetPassword />} />
 
                     {/* Protected Routes */}
                     <Route path="/" element={

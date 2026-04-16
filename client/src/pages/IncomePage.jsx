@@ -8,7 +8,7 @@ import NeonButton from '../components/NeonButton';
 const IncomePage = () => {
     const [incomes, setIncomes] = useState([]);
     const [formData, setFormData] = useState({
-        source: '',
+        title: '',
         amount: '',
         category: 'Salary',
         date: new Date().toISOString().split('T')[0],
@@ -27,7 +27,7 @@ const IncomePage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         await api.post('/income', formData);
-        setFormData({ source: '', amount: '', category: 'Salary', date: new Date().toISOString().split('T')[0], description: '' });
+        setFormData({ title: '', amount: '', category: 'Salary', date: new Date().toISOString().split('T')[0], description: '' });
         fetchIncomes();
     };
 
@@ -47,10 +47,10 @@ const IncomePage = () => {
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <GlassInput
                             type="text"
-                            placeholder="Source"
+                            placeholder="Title"
                             required
-                            value={formData.source}
-                            onChange={(e) => setFormData({ ...formData, source: e.target.value })}
+                            value={formData.title}
+                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                         />
                         <GlassInput
                             type="number"
@@ -88,7 +88,7 @@ const IncomePage = () => {
                     {incomes.map(income => (
                         <GlassCard key={income._id} className="flex justify-between items-center p-4 hover:bg-white/5 transition duration-200">
                             <div>
-                                <p className="font-bold text-lg">{income.source}</p>
+                                <p className="font-bold text-lg">{income.title}</p>
                                 <p className="text-sm text-gray-400">{new Date(income.date).toLocaleDateString()} • {income.category}</p>
                             </div>
                             <div className="flex items-center gap-4">

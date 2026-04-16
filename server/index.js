@@ -5,11 +5,7 @@ const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 
-const { initCron } = require('./utils/cronService');
-
 dotenv.config();
-
-initCron();
 
 const port = process.env.PORT || 5000;
 

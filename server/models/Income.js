@@ -6,7 +6,7 @@ const incomeSchema = mongoose.Schema({
         required: true,
         ref: 'User'
     },
-    source: {
+    title: {
         type: String,
         required: true
     },
