@@ -70,18 +70,21 @@ Monthly Financial Reports
 Export Data to Excel/PDF
 Dark Mode Support
 Advanced Analytics Charts
-🤝 Contributing
+
+## 🤝 Contributing
 
 Contributions are welcome.
 
-Fork the repository
-Create your feature branch
-Commit changes
-Push to branch
-Open Pull Request
-📄 License
+1. Fork the repository  
+2. Create your feature branch  
+3. Commit your changes  
+4. Push to your branch  
+5. Open a Pull Request  
 
-This project is licensed under the MIT License.
+## 📌 Usage
+
+This project is open for learning, modification, and personal use.  
+Anyone is free to use or adapt the code as needed.
 
 👨‍💻 Author
 
