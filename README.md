@@ -64,11 +64,6 @@ JWT_SECRET=your_secret_key
 
 (Remove JWT_SECRET if not using authentication)
 
-📷 Screenshots
-
-Add screenshots here after deployment:
-
-![Dashboard Screenshot](./screenshots/dashboard.png)
 🌐 Future Improvements
 Authentication / User Login
 Monthly Financial Reports
@@ -93,16 +88,3 @@ This project is licensed under the MIT License.
 D.R.Patel
 
 GitHub: DRPatel75
-
-
----
-
-### Quick Tip
-Update these placeholders before publishing:
-- **Database type** if not MongoDB/MySQL
-- **Authentication env vars** if not used
-- **Screenshots**
-- **Actual features** if your app has more/less
-
-If you want, I can make it more impressive/modern (with badges, GIF demo section, deployment links, etc.) for portfolio use.
-::contentReference[oaicite:1]{index=1}
