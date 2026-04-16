@@ -22,7 +22,7 @@ A full-stack personal finance tracking web application that helps users manage t
 - Express.js
 
 ### Database
-- MongoDB / MySQL *(Update this based on your actual DB)*
+- MongoDB
 
 ## 📁 Project Structure
 
